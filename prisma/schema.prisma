@@ -3,8 +3,57 @@
 datasource db {
 provider = "postgres"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email String @unique
+  password String
+  playlists Playlist[]
+}
+
+model Song {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  artistId Int
+  artist Artist @relation(fields: [artistId], references: [id])
+  playlists Playlist[]
+}
+
+model Artist {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  songs Song[]
+  albums Album[]
+}
+
+model Album {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  artistId Int
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
+model Playlist {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  songs Song[]
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
 }
